@@ -20,27 +20,28 @@
             --accent-gold: #fbbf24;
         }
 
-        body {
-            background-color: var(--bg-body);
-            font-family: 'Inter', sans-serif;
-            color: var(--text-dark);
-            margin: 0;
-            display: flex;
-            align-items: center; 
-            justify-content: center; 
-            height: 100vh;
-            overflow: hidden;
-        }
+        /* UBAH BAGIAN INI */
+body {
+    background-color: var(--bg-body);
+    font-family: 'Inter', sans-serif;
+    color: var(--text-dark);
+    margin: 0;
+    padding: 20px; /* Memberi ruang di sekitar */
+    height: auto;  /* UBAH DARI 100vh MENJADI auto */
+    overflow: auto; /* UBAH DARI hidden MENJADI auto agar bisa di-scroll */
+}
 
-        .dashboard-container {
-            width: 98%;
-            max-width: 1500px; 
-            padding: 20px;
-            background: white;
-            border-radius: 24px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-            position: relative;
-        }
+.dashboard-container {
+    width: 98%;
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 20px;
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    position: relative;
+    /* HAPUS/HINDARI penggunaan position: relative/absolute jika tidak perlu */
+}
 
         .upload-section {
             position: absolute;
@@ -128,30 +129,26 @@
 
     <div class="header">
         <h1>KAIZEN <span style="font-weight:300">ANALYTICS SYSTEM</span></h1>
-        
         <div class="d-flex justify-content-center align-items-center gap-2 mt-2">
-            <span style="font-size: 0.75rem; font-weight: bold; color: #64748b;">TAHUN:</span>
-            <select id="filterTahun" class="form-select form-select-sm" style="width: 90px; border-radius: 8px;" onchange="loadData()">
-                <option value="2024">2024</option>
-                <option value="2025" selected>2025</option>
-                <option value="2026">2026</option>
+            <span>Fiscal Year:</span>
+            <select id="filterTahun" class="form-select form-select-sm" style="width: 100px;" onchange="loadData()">
+                <option value="2025">2025</option>
+                <option value="2026" selected>2026</option>
             </select>
-        </div>
-
-        <div class="d-flex justify-content-center mt-2">
-            <div class="btn-group btn-group-sm flex-wrap shadow-sm" role="group" aria-label="Filter Bulan" style="border-radius: 8px; overflow: hidden;">
-                <button type="button" class="btn btn-outline-danger px-3" onclick="pilihBulan(1, this)">Jan</button>
-                <button type="button" class="btn btn-outline-danger px-3" onclick="pilihBulan(2, this)">Feb</button>
-                <button type="button" class="btn btn-outline-danger px-3" onclick="pilihBulan(3, this)">Mar</button>
-                <button type="button" class="btn btn-outline-danger px-3" onclick="pilihBulan(4, this)">Apr</button>
-                <button type="button" class="btn btn-outline-danger px-3" onclick="pilihBulan(5, this)">Mei</button>
-                <button type="button" class="btn btn-outline-danger px-3" onclick="pilihBulan(6, this)">Jun</button>
-                <button type="button" class="btn btn-outline-danger px-3" onclick="pilihBulan(7, this)">Jul</button>
-                <button type="button" class="btn btn-danger px-3 active" id="btnDefaultBulan" onclick="pilihBulan(8, this)">Agu</button>
-                <button type="button" class="btn btn-outline-danger px-3" onclick="pilihBulan(9, this)">Sep</button>
-                <button type="button" class="btn btn-outline-danger px-3" onclick="pilihBulan(10, this)">Okt</button>
-                <button type="button" class="btn btn-outline-danger px-3" onclick="pilihBulan(11, this)">Nov</button>
-                <button type="button" class="btn btn-outline-danger px-3" onclick="pilihBulan(12, this)">Des</button>
+            
+            <div class="btn-group shadow-sm">
+            <button type="button" class="btn btn-outline-danger px-3" onclick="pilihBulan(4, this)">Apr</button>
+            <button type="button" class="btn btn-outline-danger px-3" onclick="pilihBulan(5, this)">Mei</button>
+            <button type="button" class="btn btn-outline-danger px-3" onclick="pilihBulan(6, this)">Jun</button>
+            <button type="button" class="btn btn-outline-danger px-3" onclick="pilihBulan(7, this)">Jul</button>
+            <button type="button" class="btn btn-outline-danger px-3" onclick="pilihBulan(8, this)">Agu</button>
+            <button type="button" class="btn btn-outline-danger px-3" onclick="pilihBulan(9, this)">Sep</button>
+            <button type="button" class="btn btn-outline-danger px-3" onclick="pilihBulan(10, this)">Okt</button>
+            <button type="button" class="btn btn-outline-danger px-3" onclick="pilihBulan(11, this)">Nov</button>
+            <button type="button" class="btn btn-outline-danger px-3" onclick="pilihBulan(12, this)">Des</button>
+            <button type="button" class="btn btn-outline-danger px-3" onclick="pilihBulan(1, this)">Jan</button>
+            <button type="button" class="btn btn-outline-danger px-3" onclick="pilihBulan(2, this)">Feb</button>
+            <button type="button" class="btn btn-outline-danger px-3" onclick="pilihBulan(3, this)">Mar</button>
             </div>
         </div>
     </div>
@@ -161,31 +158,39 @@
             <div style="font-size: 0.6rem; font-weight: 800; opacity: 0.8;">PEAK PERFORMANCE</div>
             <div id="topDeptName" style="font-size: 0.75rem; font-weight: 600;">LOADING...</div>
         </div>
-        <div class="val" id="topScore">0%</div>
+        <div class="val" id="topScore" style="font-size: 1.4rem; font-weight: 800; color: var(--accent-gold);">0%</div>
     </div>
 
     <div class="row-horizontal">
         <div class="k-card card-radar-main">
-            <div class="card-label d-flex justify-content-between align-items-center">
-                <span>Awareness Ratio</span>
-                <span class="text-muted fw-normal" style="font-size: 0.65rem; text-transform: none; margin-top: 2px;">*Klik nama departemen untuk detail</span>
-            </div>
+            <div class="card-label">Awareness Ratio</div>
             <div class="chart-box" id="container-dept"><canvas id="chartDeptRadar"></canvas></div>
         </div>
-
         <div class="k-card card-radar-sub">
             <div class="card-label">Category Tendency</div>
             <div class="chart-box" id="container-radar"><canvas id="chartRadar"></canvas></div>
         </div>
-
         <div class="k-card card-employee-main">
-            <div class="card-label d-flex justify-content-between align-items-center">
-                <span>Top Score Employee</span>
-                <button class="btn btn-sm btn-outline-danger py-0 px-2" style="font-size: 0.65rem;" onclick="resetModalKeSemuaKaryawan()">
-                    Lihat Semua
-                </button>
-            </div>
+            <div class="card-label">Top Score Employee</div>
             <div class="chart-box" id="container-emp"><canvas id="chartEmployee"></canvas></div>
+        </div>
+    </div>
+
+    <div class="k-card" style="width: 100%; margin-top: 20px;">
+        <div class="card-label">DATA DETAIL KAIZEN</div>
+        <div class="table-responsive">
+            <table class="table table-hover table-custom">
+                <thead class="table-light">
+                    <tr>
+                        <th>Title</th>
+                        <th>Category</th>
+                        <th>Employee</th>
+                        <th>Dept</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                <tbody id="table-detail-kaizen"></tbody>
+            </table>
         </div>
     </div>
 </div>
@@ -510,6 +515,22 @@ window.activeCharts['chartRadar'] = new Chart(ctxRadar, {
             document.getElementById('topScore').innerText = maxVal + '%';
             document.getElementById('topDeptName').innerText = data.dept.labels[idx];
         }
+        const tb = document.getElementById('table-detail-kaizen');
+        if (tb) {
+            tb.innerHTML = ''; 
+            if(data.kaizen_list) {
+                data.kaizen_list.forEach(item => {
+                    tb.innerHTML += `<tr>
+                        <td>${item.judul_kaizen}</td>
+                        <td>${item.nama_category}</td>
+                        <td>${item.nama_karyawan}</td>
+                        <td>${item.nama_dept}</td>
+                        <td><strong>${item.total_score}</strong></td>
+                    </tr>`;
+                });
+            }
+        }
+        
     } catch (e) { console.error(e); }
 }
 window.onload = loadData;
