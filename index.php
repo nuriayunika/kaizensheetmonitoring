@@ -124,7 +124,7 @@ body {
 
 <div class="dashboard-container">
     <div class="upload-section">
-        <button class="btn-upload" onclick="promptImport()">+ Import Data</button>
+        <button class="btn-upload" onclick="promptImport()">+ Import Data Kaizen</button>
     </div>
 
     <div class="header">
