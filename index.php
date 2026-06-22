@@ -79,22 +79,18 @@
 
         .peak-mini-card {
             background: linear-gradient(135deg, var(--primary-red), var(--secondary-red));
-            padding: 8px 18px;
+            padding: 8px 20px;
             border-radius: 12px;
             display: flex;
             align-items: center;
             gap: 15px;
             color: white;
             white-space: nowrap;
-            min-width: 180px;
-            max-width: 180px;
-            overflow: hidden;
+            min-width: 220px;
+            flex-shrink: 0;
         }
         .peak-mini-card #topDeptName {
-            overflow: hidden;
-            text-overflow: ellipsis;
             white-space: nowrap;
-            max-width: 100px;
         }
 
         .peak-mini-card .val { font-size: 1.4rem; font-weight: 800; color: var(--accent-gold); }

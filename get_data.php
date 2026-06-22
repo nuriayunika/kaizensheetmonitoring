@@ -75,7 +75,7 @@ $query_top = mysqli_query($conn, "SELECT e.nama_karyawan,
                   COUNT(ks.id) as jumlah_submit
                   FROM employees e JOIN kaizen_submissions ks ON e.id = ks.employee_id 
                   WHERE MONTH(ks.tanggal_input) = '$bulan' AND YEAR(ks.tanggal_input) = '$tahun'
-                  GROUP BY e.id, e.nama_karyawan ORDER BY total_nilai DESC LIMIT 10"); 
+                  GROUP BY e.id, e.nama_karyawan ORDER BY total_nilai DESC"); 
 
 while($row = mysqli_fetch_assoc($query_top)) {
     $response['top_performance']['labels'][] = $row['nama_karyawan'];
