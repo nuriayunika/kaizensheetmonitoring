@@ -16,6 +16,7 @@ $response = [
     'radar' => ['labels' => [], 'values' => []],
     'dept' => ['labels' => [], 'values' => [], 'karyawan_ikut' => [], 'total_karyawan' => []],
     'employee' => ['labels' => [], 'values' => []],
+    'top_performance' => ['labels' => [], 'values' => [], 'submissions' => []],
     'kaizen_list' => [] 
 ];
 
@@ -57,7 +58,7 @@ while($row = mysqli_fetch_assoc($query_dept)) {
     $response['dept']['total_karyawan'][] = $total;
 }
 
-// 4. DATA LEADERBOARD
+// 4. DATA LEADERBOARD (Top Kaizen Idea - skor tertinggi per submission)
 $query_emp = mysqli_query($conn, "SELECT e.nama_karyawan, MAX(ks.total_score) as skor_tertinggi 
                   FROM employees e JOIN kaizen_submissions ks ON e.id = ks.employee_id 
                   WHERE MONTH(ks.tanggal_input) = '$bulan' AND YEAR(ks.tanggal_input) = '$tahun'
@@ -66,6 +67,20 @@ $query_emp = mysqli_query($conn, "SELECT e.nama_karyawan, MAX(ks.total_score) as
 while($row = mysqli_fetch_assoc($query_emp)) {
     $response['employee']['labels'][] = $row['nama_karyawan'];
     $response['employee']['values'][] = (int)$row['skor_tertinggi'];
+}
+
+// 4b. TOP PERFORMANCE - SUM total score per karyawan per bulan
+$query_top = mysqli_query($conn, "SELECT e.nama_karyawan, 
+                  SUM(ks.total_score) as total_nilai,
+                  COUNT(ks.id) as jumlah_submit
+                  FROM employees e JOIN kaizen_submissions ks ON e.id = ks.employee_id 
+                  WHERE MONTH(ks.tanggal_input) = '$bulan' AND YEAR(ks.tanggal_input) = '$tahun'
+                  GROUP BY e.id, e.nama_karyawan ORDER BY total_nilai DESC LIMIT 10"); 
+
+while($row = mysqli_fetch_assoc($query_top)) {
+    $response['top_performance']['labels'][] = $row['nama_karyawan'];
+    $response['top_performance']['values'][] = (int)$row['total_nilai'];
+    $response['top_performance']['submissions'][] = (int)$row['jumlah_submit'];
 }
 
 // 5. DATA DETAIL KAIZEN
