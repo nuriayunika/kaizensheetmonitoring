@@ -7,10 +7,8 @@ require 'vendor/autoload.php';
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
-// Fungsi ditaruh di luar loop agar tidak error
 function getKatID($conn, $nama) {
     if (empty($nama)) return "NULL";
-    // Mencegah error jika nama kategori mengandung tanda petik
     $nama = mysqli_real_escape_string($conn, $nama);
     $q = mysqli_query($conn, "SELECT id FROM categories WHERE nama_category = '$nama' LIMIT 1");
     $d = mysqli_fetch_assoc($q);
@@ -30,19 +28,16 @@ try {
     $spreadsheet = IOFactory::load($file);
     $sheetData = $spreadsheet->getActiveSheet()->toArray();
 
-    $sukses = 0; $gagal = 0;
+    $sukses = 0; $update = 0; $gagal = 0;
 
-    // Mulai loop dari baris ke-1 (melewati header)
     for ($i = 1; $i < count($sheetData); $i++) {
-        // Kita berikan nilai default '' (string kosong) jika data di excel null
-        $nik        = trim((string)($sheetData[$i][0] ?? ''));
-        $kategori1  = trim((string)($sheetData[$i][1] ?? ''));
-        $kategori2  = trim((string)($sheetData[$i][2] ?? ''));
-        $kategori3  = trim((string)($sheetData[$i][3] ?? ''));
-        $kategori4  = trim((string)($sheetData[$i][4] ?? ''));
-        $kategori5  = trim((string)($sheetData[$i][5] ?? ''));
-        
-        // Penyesuaian format tanggal
+        $nik       = trim((string)($sheetData[$i][0] ?? ''));
+        $kategori1 = trim((string)($sheetData[$i][1] ?? ''));
+        $kategori2 = trim((string)($sheetData[$i][2] ?? ''));
+        $kategori3 = trim((string)($sheetData[$i][3] ?? ''));
+        $kategori4 = trim((string)($sheetData[$i][4] ?? ''));
+        $kategori5 = trim((string)($sheetData[$i][5] ?? ''));
+
         $raw_date = $sheetData[$i][6] ?? '';
         if (is_numeric($raw_date)) {
             $tanggal = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($raw_date)->format('Y-m-d');
@@ -65,23 +60,40 @@ try {
             $c4 = getKatID($conn, $kategori4);
             $c5 = getKatID($conn, $kategori5);
 
-            $query_insert = "INSERT INTO kaizen_submissions 
+            // INSERT jika baru, UPDATE jika sudah ada (berdasarkan unique key)
+            $query = "INSERT INTO kaizen_submissions 
                 (employee_id, category_id_1, category_id_2, category_id_3, category_id_4, category_id_5, tanggal_input, judul_kaizen, total_score) 
-                VALUES ('$emp_id', $c1, $c2, $c3, $c4, $c5, '$tanggal', '$judul', $score)";
-            
-            if (mysqli_query($conn, $query_insert)) {
-                $sukses++;
+                VALUES ('$emp_id', $c1, $c2, $c3, $c4, $c5, '$tanggal', '$judul', $score)
+                ON DUPLICATE KEY UPDATE
+                    category_id_1 = VALUES(category_id_1),
+                    category_id_2 = VALUES(category_id_2),
+                    category_id_3 = VALUES(category_id_3),
+                    category_id_4 = VALUES(category_id_4),
+                    category_id_5 = VALUES(category_id_5),
+                    total_score   = VALUES(total_score)";
+
+            if (mysqli_query($conn, $query)) {
+                // affected_rows: 1 = insert baru, 2 = update existing, 0 = sama persis (tidak berubah)
+                $affected = mysqli_affected_rows($conn);
+                if ($affected === 2) {
+                    $update++;
+                } else {
+                    $sukses++;
+                }
             } else {
-                echo "Gagal input baris " . ($i+1) . ": " . mysqli_error($conn) . "<br>";
+                echo "Gagal baris " . ($i+1) . ": " . mysqli_error($conn) . "<br>";
                 $gagal++;
             }
         } else {
-            echo "Error: NIK $nik (baris " . ($i+1) . ") tidak terdaftar!<br>";
+            echo "NIK $nik (baris " . ($i+1) . ") tidak terdaftar!<br>";
             $gagal++;
         }
     }
-    
-    echo "<br><b>Import Selesai!</b><br>Sukses: $sukses, Gagal: $gagal.";
+
+    echo "<br><b>Import Selesai!</b><br>";
+    echo "✅ Data baru: $sukses<br>";
+    echo "🔄 Data diperbarui: $update<br>";
+    echo "❌ Gagal: $gagal";
 
 } catch (Exception $e) {
     echo "Error Import: " . $e->getMessage();
